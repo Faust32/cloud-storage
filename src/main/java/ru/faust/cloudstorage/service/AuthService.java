@@ -1,5 +1,6 @@
 package ru.faust.cloudstorage.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.faust.cloudstorage.dto.UserRegistrationDTO;
@@ -9,18 +10,13 @@ import ru.faust.cloudstorage.model.User;
 import ru.faust.cloudstorage.repository.UserRepository;
 import ru.faust.cloudstorage.validation.UserValidation;
 
-
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public void register(UserRegistrationDTO userRegistrationDTO) {
         if (userRepository.findByUsername(userRegistrationDTO.userDTO().username()).isPresent()) {

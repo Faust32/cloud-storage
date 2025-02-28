@@ -1,8 +1,6 @@
-package ru.faust.cloudstorage.config;
+package ru.faust.cloudstorage.config.minio;
 
 import io.minio.MinioClient;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +11,9 @@ public class MinioConfig {
     @Bean
     public MinioClient minioClient(MinioProperties minioProperties) {
         return MinioClient.builder()
-                .endpoint(minioProperties.endpoint)
-                .credentials(minioProperties.accessKeyId,
-                        minioProperties.accessKeySecret)
+                .endpoint(minioProperties.getEndpoint())
+                .credentials(minioProperties.getAccessKeyId(),
+                        minioProperties.getAccessKeySecret())
                 .build();
     }
 
@@ -25,12 +23,4 @@ public class MinioConfig {
         return new MinioProperties();
     }
 
-
-    @Setter
-    @Getter
-    public static class MinioProperties {
-        private String endpoint;
-        private String accessKeyId;
-        private String accessKeySecret;
-    }
 }

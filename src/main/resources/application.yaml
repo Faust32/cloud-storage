@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:classpath:.env[.properties]
   datasource:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
@@ -16,8 +18,11 @@ spring:
     redis:
       host: localhost
       port: 6379
-
+  cache:
+    type: redis
+    cache-names: redis-cache
 minio:
-  endpoint: http://localhost:9000
-  access-key-id: OkO5ultaxqbpguBclVJH
-  access-key-secret: gJqIlO224ZcEM0fx53oSjT8cKW3VL3VVSpcPedEk
+  endpoint: ${MINIO_ENDPOINT}
+  access-key-id: ${MINIO_KEY_ID}
+  access-key-secret: ${MINIO_KEY_SECRET}
+  bucket-name: ${MINIO_BUCKET_NAME}

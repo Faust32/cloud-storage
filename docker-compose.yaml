@@ -26,7 +26,7 @@ services:
       - redis-data:/data
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2025-02-18T16-25-55Z
+    image: quay.io/minio/minio:latest
     container_name: minio
     ports:
       - "9000:9000"
