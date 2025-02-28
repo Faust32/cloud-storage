@@ -41,7 +41,7 @@ public class SignInTest {
     // TODO: at the end add correct endpoints to security config and uncomment this test!
 //    @Test
 //    public void givenInvalidEndpoint_shouldReturn404() throws Exception {
-//        mvc.perform(get("/invalid-endpoint").contentType(MediaType.APPLICATION_JSON))
+//        mvc.perform(getFile("/invalid-endpoint").contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(status().isNotFound());
 //    }
 }

@@ -2,17 +2,15 @@ package ru.faust.cloudstorage.service;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
-import ru.faust.cloudstorage.model.FileDetails;
-import ru.faust.cloudstorage.util.FileResponse;
 
 public interface FileStorageService {
 
-    String upload(MultipartFile file);
+    String uploadFile(MultipartFile file, String currentDirectory);
 
-    void delete(String fileName);
+    void deleteFile(String filePath);
 
-    InputStreamResource get(String fileName);
+    InputStreamResource getFile(String filePath);
 
-    void rename(String fileName, String newFileName);
+    void renameFile(String filePath, String newFilePath);
 
 }

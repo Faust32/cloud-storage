@@ -1,4 +1,4 @@
-package ru.faust.cloudstorage.service;
+package ru.faust.cloudstorage.service.impl;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.faust.cloudstorage.config.minio.MinioProperties;
 import ru.faust.cloudstorage.exception.CreateBucketException;
-import ru.faust.cloudstorage.exception.InvalidParameterException;
 import ru.faust.cloudstorage.exception.NoSuchFileException;
 import ru.faust.cloudstorage.exception.UploadException;
-import ru.faust.cloudstorage.model.FileDetails;
+import ru.faust.cloudstorage.service.FileStorageService;
 
 import java.io.InputStream;
 
@@ -24,24 +23,24 @@ public class FileStorageServiceImpl implements FileStorageService {
     private final MinioProperties minioProperties;
 
     @Override
-    public String upload(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String currentDirectory) {
         try {
             createBucket();
         } catch (Exception e) {
-            throw new UploadException("File upload failed: " + e.getMessage());
+            throw new UploadException("File uploadFile failed: " + e.getMessage());
         }
         if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new UploadException("File must have name,");
         }
-        String fileName = generateFileName(file);
+        String filePath = currentDirectory + generateFileName(file);
         InputStream inputStream;
         try {
             inputStream = file.getInputStream();
         } catch (Exception e) {
-            throw new UploadException("File upload failed: " + e.getMessage());
+            throw new UploadException("File uploadFile failed: " + e.getMessage());
         }
-        saveFile(inputStream, fileName);
-        return fileName;
+        saveFile(inputStream, filePath);
+        return filePath;
     }
 
     private void createBucket() {
@@ -69,34 +68,34 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @SneakyThrows
-    private void saveFile(InputStream inputStream, String fileName) {
+    private void saveFile(InputStream inputStream, String filePath) {
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .stream(inputStream, inputStream.available(), -1)
                         .bucket(minioProperties.getBucketName())
-                        .object(fileName)
+                        .object(filePath)
                         .build()
         );
     }
 
     @Override
     @SneakyThrows
-    public void delete(String fileName) {
+    public void deleteFile(String filePath) {
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
                         .bucket(minioProperties.getBucketName())
-                        .object(fileName)
+                        .object(filePath)
                         .build()
         );
     }
 
     @Override
     @SneakyThrows
-    public InputStreamResource get(String fileName) {
+    public InputStreamResource getFile(String filePath) {
         InputStream inputStream = minioClient.getObject(
                 GetObjectArgs.builder()
                         .bucket(minioProperties.getBucketName())
-                        .object(fileName)
+                        .object(filePath)
                         .build()
         );
         return new InputStreamResource(inputStream);
@@ -104,32 +103,32 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     @SneakyThrows
-    public void rename(String fileName, String newFileName) {
-        if (fileName.equals(newFileName)) {
+    public void renameFile(String filePath, String newfilePath) {
+        if (filePath.equals(newfilePath)) {
             return;
         }
         boolean exists = minioClient.statObject(
                 StatObjectArgs.builder()
                         .bucket(minioProperties.getBucketName())
-                        .object(fileName)
+                        .object(filePath)
                         .build()
         ) != null;
         if (!exists) {
-            throw new NoSuchFileException("No such file: " + fileName);
+            throw new NoSuchFileException("No such file: " + filePath);
         }
         minioClient.copyObject(
                 CopyObjectArgs.builder()
                         .bucket(minioProperties.getBucketName())
-                        .object(newFileName)
+                        .object(newfilePath)
                         .source(
                                 CopySource.builder()
                                         .bucket(minioProperties.getBucketName())
-                                        .object(fileName)
+                                        .object(filePath)
                                         .build()
                         )
                         .build()
         );
-        delete(fileName);
+        deleteFile(filePath);
     }
 
 

@@ -1,6 +1,6 @@
 package ru.faust.cloudstorage.service;
 
-public class FileUploaderService {
+public interface FileUploaderService {
 
 
 }
